@@ -1,160 +1,87 @@
 #include "shell.h"
 
 /**
- * add_node - adds a node to the start of the list
- * @head: address of pointer to head node
- * @str: str field of node
- * @num: node index used by history
+ * _strcpy - copies a string
+ * @dest: the destination
+ * @src: the source
  *
- * Return: size of list
+ * Return: pointer to destination
  */
-list_t *add_node(list_t **head, const char *str, int num)
+char *_strcpy(char *dest, char *src)
 {
-	list_t *new_head;
+	int i = 0;
 
-	if (!head)
-		return (NULL);
-	new_head = malloc(sizeof(list_t));
-	if (!new_head)
-		return (NULL);
-	_memset((void *)new_head, 0, sizeof(list_t));
-	new_head->num = num;
-	if (str)
+	if (dest == src || src == 0)
+		return (dest);
+	while (src[i])
 	{
-		new_head->str = _strdup(str);
-		if (!new_head->str)
-		{
-			free(new_head);
-			return (NULL);
-		}
-	}
-	new_head->next = *head;
-	*head = new_head;
-	return (new_head);
-}
-
-/**
- * add_node_end - adds a node to the end of the list
- * @head: address of pointer to head node
- * @str: str field of node
- * @num: node index used by history
- *
- * Return: size of list
- */
-list_t *add_node_end(list_t **head, const char *str, int num)
-{
-	list_t *new_node, *node;
-
-	if (!head)
-		return (NULL);
-
-	node = *head;
-	new_node = malloc(sizeof(list_t));
-	if (!new_node)
-		return (NULL);
-	_memset((void *)new_node, 0, sizeof(list_t));
-	new_node->num = num;
-	if (str)
-	{
-		new_node->str = _strdup(str);
-		if (!new_node->str)
-		{
-			free(new_node);
-			return (NULL);
-		}
-	}
-	if (node)
-	{
-		while (node->next)
-			node = node->next;
-		node->next = new_node;
-	}
-	else
-		*head = new_node;
-	return (new_node);
-}
-
-/**
- * print_list_str - prints only the str element of a list_t linked list
- * @h: pointer to first node
- *
- * Return: size of list
- */
-size_t print_list_str(const list_t *h)
-{
-	size_t i = 0;
-
-	while (h)
-	{
-		_puts(h->str ? h->str : "(nil)");
-		_puts("\n");
-		h = h->next;
+		dest[i] = src[i];
 		i++;
 	}
-	return (i);
+	dest[i] = 0;
+	return (dest);
 }
 
 /**
- * delete_node_at_index - deletes node at given index
- * @head: address of pointer to first node
- * @index: index of node to delete
+ * _strdup - duplicates a string
+ * @str: the string to duplicate
  *
- * Return: 1 on success, 0 on failure
+ * Return: pointer to the duplicated string
  */
-int delete_node_at_index(list_t **head, unsigned int index)
+char *_strdup(const char *str)
 {
-	list_t *node, *prev_node;
-	unsigned int i = 0;
+	int length = 0;
+	char *ret;
 
-	if (!head || !*head)
-		return (0);
-
-	if (!index)
-	{
-		node = *head;
-		*head = (*head)->next;
-		free(node->str);
-		free(node);
-		return (1);
-	}
-	node = *head;
-	while (node)
-	{
-		if (i == index)
-		{
-			prev_node->next = node->next;
-			free(node->str);
-			free(node);
-			return (1);
-		}
-		i++;
-		prev_node = node;
-		node = node->next;
-	}
-	return (0);
+	if (str == NULL)
+		return (NULL);
+	while (*str++)
+		length++;
+	ret = malloc(sizeof(char) * (length + 1));
+	if (!ret)
+		return (NULL);
+	for (length++; length--;)
+		ret[length] = *--str;
+	return (ret);
 }
 
 /**
- * free_list - frees all nodes of a list
- * @head_ptr: address of pointer to head node
+ *_puts - prints an input string
+ *@str: the string to be printed
  *
- * Return: void
+ * Return: Nothing
  */
-void free_list(list_t **head_ptr)
+void _puts(char *str)
 {
-	list_t *node, *next_node, *head;
+	int i = 0;
 
-	if (!head_ptr || !*head_ptr)
+	if (!str)
 		return;
-	head = *head_ptr;
-	node = head;
-	while (node)
+	while (str[i] != '\0')
 	{
-		next_node = node->next;
-		free(node->str);
-		free(node);
-		node = next_node;
+		_putchar(str[i]);
+		i++;
 	}
-	*head_ptr = NULL;
 }
 
+/**
+ * _putchar - writes the character c to stdout
+ * @c: The character to print
+ *
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
+ */
+int _putchar(char c)
+{
+	static int i;
+	static char buf[WRITE_BUF_SIZE];
+
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
+	{
+		write(1, buf, i);
+		i = 0;
+	}
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
+	return (1);
+}
